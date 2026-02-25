@@ -1,0 +1,117 @@
+@{
+    ViewData["Title"] = "Resident Directory";
+    Layout = "_DashboardLayout";
+    var users = ViewBag.Users as IEnumerable<dynamic> ?? new List<dynamic>();
+}
+
+<div class="space-y-6 animate-fade-in">
+    <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="user" class="text-blue-600 w-6 h-6"></i> Resident Directory
+        </h2>
+        <div class="relative">
+            <i data-lucide="search" class="absolute left-3 top-3 text-slate-400 w-[18px] h-[18px]"></i>
+            <input type="text" placeholder="Search name, flat, or wing..." 
+                   class="pl-10 p-3 border rounded-xl w-64 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm" />
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-bold border-b border-slate-100">
+                <tr>
+                    <th class="p-4">Resident Profile</th>
+                    <th class="p-4">Account Status</th>
+                    <th class="p-4">Location</th>
+                    <th class="p-4">Role</th>
+                    <th class="p-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                @if (!users.Any())
+                {
+                    <tr>
+                        <td colspan="5">
+                            <div class="text-center p-12">
+                                <i data-lucide="user" class="mx-auto text-slate-200 mb-4 w-12 h-12"></i>
+                                <p class="text-slate-400 font-medium">No residents found.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @foreach (var u in users)
+                {
+                    <tr class="hover:bg-slate-50 transition duration-150">
+                        <!-- RESIDENT INFO -->
+                        <td class="p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm @(u.role == "admin" ? "bg-purple-600" : "bg-blue-500")">
+                                    @(u.name.Substring(0, 1).ToUpper())
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-800">@u.name</p>
+                                    <p class="text-xs text-slate-400 font-medium">@u.email</p>
+                                    <div class="flex items-center gap-1 mt-1 text-[10px] text-slate-400">
+                                        <i data-lucide="calendar" class="w-[10px] h-[10px]"></i> Joined: @u.createdAt.ToString("d")
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- ACCOUNT STATUS -->
+                        <td class="p-4">
+                            @if (u.isSetup)
+                            {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                    <i data-lucide="check-circle" class="w-3 h-3"></i> Verified
+                                </span>
+                            }
+                            else
+                            {
+                                <div class="flex flex-col items-start gap-1">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200">
+                                        <i data-lucide="clock" class="w-3 h-3"></i> Pending
+                                    </span>
+                                    <span class="text-[10px] text-slate-400 pl-1">Invited</span>
+                                </div>
+                            }
+                        </td>
+
+                        <!-- LOCATION -->
+                        <td class="p-4">
+                            @if (u.wing != null && u.flatNumber != null)
+                            {
+                                <span class="flex items-center gap-1.5 text-sm font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-lg w-fit border border-slate-200">
+                                    <i data-lucide="map-pin" class="text-slate-400 w-3 h-3"></i> @u.wing - @u.flatNumber
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-xs text-slate-400 italic">Not Assigned</span>
+                            }
+                        </td>
+
+                        <!-- ROLE -->
+                        <td class="p-4">
+                             <span class="text-xs font-bold px-2 py-1 rounded border flex items-center gap-1 w-fit uppercase tracking-wider @(u.role == "admin" ? "bg-purple-50 text-purple-700 border-purple-200" : "bg-slate-50 text-slate-600 border-slate-200")">
+                                <i data-lucide="@(u.role == "admin" ? "shield" : "user")" class="w-3 h-3"></i> @u.role
+                            </span>
+                        </td>
+
+                        <!-- ACTIONS -->
+                        <td class="p-4 text-right">
+                            <div class="flex justify-end gap-2">
+                                <button class="text-xs bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 px-3 py-1.5 rounded-lg font-bold transition shadow-sm">
+                                    @(u.role == "admin" ? "Demote" : "Promote")
+                                </button>
+                                <button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Remove User">
+                                    <i data-lucide="trash-2" class="w-[18px] h-[18px]"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

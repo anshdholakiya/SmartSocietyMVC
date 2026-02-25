@@ -1,0 +1,26 @@
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+    <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-slate-800">
+        <i data-lucide="alert-circle" class="text-rose-500 w-6 h-6"></i> Report an Issue
+    </h3>
+    
+    <form asp-action="FileComplaint" asp-controller="Dashboard" method="post" enctype="multipart/form-data" class="space-y-4">
+        
+        <input type="text" name="Title" placeholder="Issue Title (e.g. Broken Pipe)" 
+               class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+               required />
+               
+        <textarea name="Description" placeholder="Describe the problem..." 
+                  class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none h-24"
+                  required></textarea>
+        
+        <label class="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition">
+            <i data-lucide="camera" class="text-slate-400 w-5 h-5"></i>
+            <span class="text-sm text-slate-500" id="fileNameDisplay">Upload Photo</span>
+            <input type="file" name="Image" class="hidden" accept="image/*" onchange="document.getElementById('fileNameDisplay').textContent = this.files[0] ? this.files[0].name : 'Upload Photo';" />
+        </label>
+
+        <button type="submit" class="w-full bg-rose-600 text-white py-3 rounded-xl font-bold hover:bg-rose-700 transition flex items-center justify-center gap-2">
+            <i data-lucide="send" class="w-4 h-4"></i> Submit Complaint
+        </button>
+    </form>
+</div>

@@ -1,0 +1,12 @@
+@model dynamic
+
+<div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-default">
+    <div class="flex justify-between items-start mb-4">
+        <div class="p-3 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform">
+            <i data-lucide="@Model.Icon" class="@Model.IconColor w-6 h-6"></i>
+        </div>
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter bg-slate-50 px-2 py-1 rounded">@Model.Trend</span>
+    </div>
+    <h4 class="text-slate-500 text-sm font-semibold">@Model.Title</h4>
+    <p class="text-2xl font-bold mt-1 @Model.Color">@Model.Value</p>
+</div>

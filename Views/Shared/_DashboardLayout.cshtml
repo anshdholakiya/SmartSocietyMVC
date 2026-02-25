@@ -1,0 +1,106 @@
+@{
+    // Basic user object simulation for the layout
+    var userName = User.Identity?.Name ?? "Admin User";
+    var userRole = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "admin";
+    var activeTab = ViewData["ActiveTab"]?.ToString() ?? "dashboard";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SmartSociety</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="selection:bg-blue-100 selection:text-blue-900 bg-slate-50 font-sans overflow-hidden">
+    <div class="flex h-screen">
+        
+        <!-- --- SIDEBAR --- -->
+        <aside class="w-64 bg-slate-900 text-white h-screen flex flex-col fixed left-0 top-0 shadow-2xl z-50">
+            <!-- 1. Logo Section -->
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                <div class="bg-blue-600 p-2 rounded-lg">
+                    <i data-lucide="shield" class="text-white w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wide">AutoCraft</h1>
+                    <p class="text-xs text-slate-400">Society Manager</p>
+                </div>
+            </div>
+
+            <!-- 2. Navigation Links -->
+            <nav class="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
+                <div class="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Overview</div>
+                
+                @await Html.PartialAsync("_NavItem", new { Icon = "home", Label = "Dashboard", Href = "/Dashboard", IsActive = activeTab == "dashboard" })
+                @await Html.PartialAsync("_NavItem", new { Icon = "bell", Label = "Notices", Href = "/Dashboard/Notices", IsActive = activeTab == "notices" })
+                @await Html.PartialAsync("_NavItem", new { Icon = "message-square", Label = "Complaints", Href = "/Dashboard/Complaints", IsActive = activeTab == "complaints" })
+
+                @if (userRole == "admin")
+                {
+                    <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Admin Controls</div>
+                    @await Html.PartialAsync("_NavItem", new { Icon = "users", Label = "Manage Society", Href = "/Dashboard/Society", IsActive = activeTab == "society" })
+                    @await Html.PartialAsync("_NavItem", new { Icon = "building", Label = "Facilities", Href = "/Dashboard/Facilities", IsActive = activeTab == "facilities" })
+                    @await Html.PartialAsync("_NavItem", new { Icon = "calendar", Label = "Booking Requests", Href = "/Dashboard/Bookings", IsActive = activeTab == "bookings" })
+                    @await Html.PartialAsync("_NavItem", new { Icon = "user-plus", Label = "Invite Residents", Href = "/Dashboard/Invite", IsActive = activeTab == "invite" })
+                    @await Html.PartialAsync("_NavItem", new { Icon = "receipt", Label = "Billing System", Href = "/Dashboard/Bills", IsActive = activeTab == "bills" })
+                    @await Html.PartialAsync("_NavItem", new { Icon = "users", Label = "Directory", Href = "/Dashboard/Residents", IsActive = activeTab == "residents" })
+                }
+                else if (userRole == "resident")
+                {
+                    <div class="px-3 mt-6 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Resident Menu</div>
+                    @await Html.PartialAsync("_NavItem", new { Icon = "users", Label = "Society Info", Href = "/Dashboard/Society", IsActive = activeTab == "society" })
+                    @await Html.PartialAsync("_NavItem", new { Icon = "receipt", Label = "Events", Href = "/Dashboard/Events", IsActive = activeTab == "events" })
+                    @await Html.PartialAsync("_NavItem", new { Icon = "receipt", Label = "My Bills", Href = "/Dashboard/Bills", IsActive = activeTab == "bills" })
+                }
+            </nav>
+
+            <!-- 3. User Profile & Logout -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-blue-400">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-bold truncate">@userName</p>
+                        <p class="text-xs text-slate-500 truncate capitalize">@userRole</p>
+                    </div>
+                </div>
+
+                <form method="post" action="/Account/Logout">
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white py-2 rounded-lg transition-all duration-300 text-sm font-medium">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- --- MAIN CONTENT AREA --- -->
+        <main class="flex-1 ml-64 overflow-y-auto h-screen scroll-smooth">
+            <div class="p-8">
+                <header class="mb-8 flex justify-between items-end border-b border-slate-200 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 capitalize">@(ViewData["Title"])</h2>
+                        <p class="text-slate-500 text-sm">Welcome back, @userName</p>
+                    </div>
+                    <div class="text-sm font-medium text-slate-400 bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">
+                        @DateTime.Now.ToString("dddd, MMMM d, yyyy")
+                    </div>
+                </header>
+                
+                @RenderBody()
+                
+            </div>
+        </main>
+        
+    </div>
+
+    <script>lucide.createIcons();</script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,93 @@
+@{
+    var residents = ViewBag.Users as IEnumerable<dynamic> ?? new List<dynamic>(); 
+    var allBills = ViewBag.AllBills as IEnumerable<dynamic> ?? new List<dynamic>(); 
+}
+
+<div class="space-y-8 animate-fade-in">
+
+    <!-- 1. GENERATOR FORM -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800">
+            <i data-lucide="users" class="text-blue-500 w-6 h-6"></i> Generate Monthly Bill
+        </h3>
+
+        <form method="post" action="/Dashboard/CreateBill" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Resident</label>
+                <select name="userId" class="w-full p-3 border rounded-xl" required>
+                    <option value="">-- Choose a Resident --</option>
+                    @foreach (var r in residents)
+                    {
+                        <option value="@r.Id">@r.Name (@r.Email)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Amount (₹)</label>
+                    <input type="number" name="amount" placeholder="2500" class="w-full p-3 border rounded-xl" required />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Bill Description</label>
+                    <input type="text" name="month" placeholder="e.g. Maintenance - March 2026" class="w-full p-3 border rounded-xl" required />
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Due Date</label>
+                <input type="date" name="dueDate" class="w-full p-3 border rounded-xl" required />
+            </div>
+
+            <button type="submit" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition">
+                Create Bill
+            </button>
+        </form>
+    </div>
+
+    <!-- 2. MASTER BILL LIST -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h3 class="text-xl font-bold mb-6 text-slate-800">Payment Records</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-bold">
+                    <tr>
+                        <th class="p-4">Resident</th>
+                        <th class="p-4">Description</th>
+                        <th class="p-4">Amount</th>
+                        <th class="p-4">Status</th>
+                        <th class="p-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @if (!allBills.Any())
+                    {
+                        <tr><td colspan="5" class="text-center p-6 text-slate-400">No bills generated yet.</td></tr>
+                    }
+                    @foreach (var bill in allBills)
+                    {
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-medium text-slate-700">
+                                @(bill.User?.name ?? "Unknown")
+                                <div class="text-xs text-slate-400">@(bill.User?.email ?? "")</div>
+                            </td>
+                            <td class="p-4 text-sm">@(bill.description ?? bill.month)</td>
+                            <td class="p-4 font-bold">₹@bill.amount</td>
+                            <td class="p-4">
+                                <span class="px-2 py-1 rounded text-xs font-bold flex w-fit items-center gap-1 @(bill.status == "paid" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")">
+                                    <i data-lucide="@(bill.status == "paid" ? "check-circle" : "clock")" class="w-3 h-3"></i> @bill.status.ToUpper()
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                @if (bill.status == "pending")
+                                {
+                                    <button class="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-green-700 transition shadow-sm">Mark Paid</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

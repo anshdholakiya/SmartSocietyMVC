@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_DashboardLayout";
+    
+    var stats = ViewBag.Stats;
+    var userRole = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "admin";
+}
+
+<div class="space-y-8 animate-fade-in">
+    <!-- 1. WELCOME BANNER -->
+    <div class="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl border border-slate-800">
+        <div class="relative z-10">
+            <h3 class="text-3xl font-bold mb-2">Society Overview</h3>
+            <p class="text-slate-400">
+                @if (userRole == "admin")
+                {
+                    <text>You have ₹@stats.TotalPending.ToString("N0") in pending dues.</text>
+                }
+                else
+                {
+                    <text>Welcome back. You have @stats.ActiveIssues active support tickets.</text>
+                }
+            </p>
+        </div>
+        <div class="absolute right-[-20px] bottom-[-20px] opacity-10">
+            <i data-lucide="shield" class="w-[200px] h-[200px]"></i>
+        </div>
+    </div>
+
+    <!-- 2. KEY METRICS GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        @if (userRole == "admin")
+        {
+            @await Html.PartialAsync("_StatCard", new { Title = "Total Collection", Value = $"₹{stats.TotalCollected:N0}", Icon = "wallet", IconColor = "text-green-500", Trend = "Lifetime", Color = "text-slate-800" })
+            @await Html.PartialAsync("_StatCard", new { Title = "Pending Dues", Value = $"₹{stats.TotalPending:N0}", Icon = "alert-triangle", IconColor = "text-amber-500", Trend = "Urgent", Color = "text-amber-600" })
+            @await Html.PartialAsync("_StatCard", new { Title = "Total Residents", Value = stats.TotalResidents.ToString(), Icon = "users", IconColor = "text-blue-500", Trend = "Occupancy", Color = "text-slate-800" })
+            @await Html.PartialAsync("_StatCard", new { Title = "Active Issues", Value = stats.ActiveIssues.ToString(), Icon = "message-square", IconColor = "text-rose-500", Trend = "Open Tickets", Color = "text-rose-600" })
+        }
+        else
+        {
+            @* Resident Stats placeholder *@
+            @await Html.PartialAsync("_StatCard", new { Title = "Pending Dues", Value = "₹0", Icon = "wallet", IconColor = "text-blue-500", Trend = "Outstanding", Color = "text-slate-800" })
+            @await Html.PartialAsync("_StatCard", new { Title = "Last Payment", Value = "₹0", Icon = "trending-up", IconColor = "text-green-500", Trend = "None", Color = "text-slate-800" })
+            @await Html.PartialAsync("_StatCard", new { Title = "My Complaints", Value = "0", Icon = "message-square", IconColor = "text-amber-500", Trend = "Pending", Color = "text-slate-800" })
+            @await Html.PartialAsync("_StatCard", new { Title = "Total Paid", Value = "₹0", Icon = "shield", IconColor = "text-green-500", Trend = "Lifetime", Color = "text-slate-800" })
+        }
+    </div>
+
+    <!-- 3. ACTIONS LAYOUT -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left: Financial Chart Placeholder-->
+        <div class="lg:col-span-2">
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm h-full min-h-[350px] flex items-center justify-center">
+                 <p class="text-slate-400 italic">Financial Chart Component (To be implemented)</p>
+            </div>
+        </div>
+
+        <!-- Right: Urgent Actions -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm h-full max-h-[350px] overflow-y-auto">
+            <h4 class="font-bold text-slate-800 mb-6 text-lg">Urgent Action Items</h4>
+            <div class="space-y-4">
+                @if (stats.TotalPending > 0)
+                {
+                    @await Html.PartialAsync("_ActionItem", new { Title = $"Collect Pending Dues (₹{stats.TotalPending:N0})", Status = "High Priority", Priority = "High" })
+                }
+                @if (stats.ActiveIssues > 0)
+                {
+                    @await Html.PartialAsync("_ActionItem", new { Title = $"Resolve {stats.ActiveIssues} Open Complaints", Status = "Pending", Priority = "Medium" })
+                }
+                @if (userRole == "admin" && DateTime.Now.Day <= 5)
+                {
+                    @await Html.PartialAsync("_ActionItem", new { Title = "Generate Monthly Bills", Status = "Scheduled", Priority = "High" })
+                }
+                @if (stats.TotalPending == 0 && stats.ActiveIssues == 0)
+                {
+                    <div class="text-slate-400 italic p-4 text-center bg-slate-50 rounded-xl">All caught up! No urgent actions.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

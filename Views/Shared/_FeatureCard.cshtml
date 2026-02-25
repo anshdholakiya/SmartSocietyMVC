@@ -1,0 +1,9 @@
+@model dynamic
+
+<div class="p-8 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group">
+    <div class="mb-5 p-3 bg-slate-50 rounded-xl w-fit group-hover:bg-blue-50 transition-colors">
+        <i data-lucide="@Model.Icon" class="@Model.IconClass w-[28px] h-[28px]"></i>
+    </div>
+    <h3 class="text-xl font-bold text-slate-900 mb-3">@Model.Title</h3>
+    <p class="text-slate-500 leading-relaxed font-medium text-sm">@Model.Desc</p>
+</div>

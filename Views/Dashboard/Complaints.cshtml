@@ -1,0 +1,19 @@
+@model IEnumerable<SmartSocietyMVC.Models.Complaint>
+@{
+    ViewData["Title"] = "Complaints & Issues";
+    Layout = "_DashboardLayout";
+    var userRole = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "admin";
+}
+
+<div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <header class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-slate-800">Complaints & Issues</h2>
+    </header>
+
+    @if (userRole == "resident")
+    {
+        @await Html.PartialAsync("_FileComplaint")
+    }
+
+    @await Html.PartialAsync("_ComplaintList", Model)
+</div>
