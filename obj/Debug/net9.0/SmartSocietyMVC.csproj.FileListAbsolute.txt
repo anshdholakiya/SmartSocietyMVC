@@ -321,3 +321,5 @@ D:\Clg_Project\SmartSocietyMVC\obj\Debug\net9.0\SmartSocietyMVC.csproj.AssemblyR
 D:\Clg_Project\SmartSocietyMVC\obj\Debug\net9.0\SmartSoc.E3F6C7C8.Up2Date
 D:\Clg_Project\SmartSocietyMVC\bin\Debug\net9.0\BCrypt.Net-Next.dll
 D:\Clg_Project\SmartSocietyMVC\obj\Debug\net9.0\compressed\o55rt4ycve-h3ek7paysj.gz
+D:\Clg_Project\SmartSocietyMVC\obj\Debug\net9.0\SmartSocietyMVC.sourcelink.json
+D:\Clg_Project\SmartSocietyMVC\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
