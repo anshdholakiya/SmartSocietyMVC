@@ -7,7 +7,7 @@
     var userName = User.Identity?.Name ?? "User";
     
     var userIdString = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-    string profilePic = null;
+    string? profilePic = null;
     if (int.TryParse(userIdString, out int userId))
     {
         var user = DbContext.Users.Find(userId);

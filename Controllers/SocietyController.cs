@@ -34,6 +34,8 @@ namespace SmartSocietyMVC.Controllers
             var societyId = GetSocietyId();
             var society = await _context.Societies.FindAsync(societyId);
 
+            if (society == null) return RedirectToAction(nameof(Index));
+
             var amenitiesList = System.Text.Json.JsonSerializer.Deserialize<List<string>>(society.Amenities ?? "[]");
             if (amenitiesList == null || !amenitiesList.Any())
             {

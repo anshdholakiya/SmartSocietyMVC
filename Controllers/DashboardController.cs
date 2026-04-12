@@ -40,8 +40,8 @@ namespace SmartSocietyMVC.Controllers
             {
                 stats = new
                 {
-                    TotalCollected = await _context.Bills.Where(b => b.Status == "paid").SumAsync(b => b.Amount),
-                    TotalPending = await _context.Bills.Where(b => b.Status == "pending").SumAsync(b => b.Amount),
+                    TotalCollected = await _context.Bills.Where(b => b.Status == "paid").SumAsync(b => (decimal?)b.Amount) ?? 0m,
+                    TotalPending = await _context.Bills.Where(b => b.Status == "pending").SumAsync(b => (decimal?)b.Amount) ?? 0m,
                     TotalResidents = await _context.Users.CountAsync(),
                     ActiveIssues = await _context.Complaints.CountAsync(c => c.Status != "resolved")
                 };
@@ -50,9 +50,9 @@ namespace SmartSocietyMVC.Controllers
             {
                 stats = new
                 {
-                    MyBalance = await _context.Bills.Where(b => b.UserId == userId && b.Status == "pending").SumAsync(b => b.Amount),
+                    MyBalance = await _context.Bills.Where(b => b.UserId == userId && b.Status == "pending").SumAsync(b => (decimal?)b.Amount) ?? 0m,
                     ActiveIssues = await _context.Complaints.CountAsync(c => c.UserId == userId && c.Status != "resolved"),
-                    TotalSpent = await _context.Bills.Where(b => b.UserId == userId && b.Status == "paid").SumAsync(b => b.Amount)
+                    TotalSpent = await _context.Bills.Where(b => b.UserId == userId && b.Status == "paid").SumAsync(b => (decimal?)b.Amount) ?? 0m
                 };
             }
 
