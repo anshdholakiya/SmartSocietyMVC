@@ -26,8 +26,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
     
-    // Ensure database is created/migrated
-    context.Database.Migrate();
+    // Ensure database is created
+    context.Database.EnsureCreated();
 
     if (!context.Societies.Any())
     {
