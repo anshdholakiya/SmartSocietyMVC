@@ -33,7 +33,7 @@ namespace SmartSocietyMVC.Controllers
                 return View();
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
@@ -47,7 +47,7 @@ namespace SmartSocietyMVC.Controllers
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role),
-                new Claim("SocietyId", user.SocietyId?.ToString() ?? ""),
+                new Claim("SocietyId", user.SocietyId.ToString()),
             };
 
             var identity = new ClaimsIdentity(claims, "Cookies");
@@ -73,7 +73,7 @@ namespace SmartSocietyMVC.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == token && !u.IsSetup);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == token.ToLower() && !u.IsSetup);
 
             if (user == null)
             {
@@ -102,7 +102,7 @@ namespace SmartSocietyMVC.Controllers
                 return View();
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && !u.IsSetup);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() && !u.IsSetup);
 
             if (user == null)
             {

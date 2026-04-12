@@ -1,0 +1,299 @@
+@using SmartSocietyMVC.Models
+@{
+    ViewData["Title"] = "Event Booking";
+    var isAdmin = User.IsInRole("admin");
+    var events = ViewBag.Events as List<Event> ?? new List<Event>();
+    var facilities = ViewBag.Facilities as List<Facility> ?? new List<Facility>();
+    var allBookings = ViewBag.AllBookings as List<Booking> ?? new List<Booking>();
+    var myBookings = ViewBag.MyBookings as List<Booking> ?? new List<Booking>();
+}
+
+<div class="p-6 md:p-10 space-y-8 animate-fade-in pb-24">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-2">@TempData["SuccessMessage"]</div>
+    }
+
+    <!-- Header -->
+    <div class="flex justify-between items-center flex-wrap gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">Event Booking</h1>
+            <p class="text-slate-500">@(isAdmin ? "Manage facilities and approve booking requests." : "Reserve community halls and facilities.")</p>
+        </div>
+        @if (isAdmin)
+        {
+            <button onclick="document.getElementById('addEventModal').classList.toggle('hidden')" class="bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition text-sm font-medium">
+                + Add Event
+            </button>
+        }
+    </div>
+
+    <!-- Main Grid: Booking Form (resident) | Bookings List -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        @if (!isAdmin)
+        {
+            <!-- LEFT: Resident Booking Form -->
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 h-fit">
+                <h2 class="text-xl font-bold text-slate-800 mb-6">New Booking</h2>
+                <form asp-controller="Events" asp-action="RequestBooking" method="post" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-500 mb-1">Select Facility</label>
+                        <select name="facilityId" id="facilitySelect" required onchange="updatePrice()"
+                            class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- Choose --</option>
+                            @foreach (var f in facilities)
+                            {
+                                <option value="@f.Id" data-price="@f.PricePerDay">
+                                    @f.Name (Capacity: @f.Capacity) - ₹@f.PricePerDay/day
+                                </option>
+                            }
+                            @if (!facilities.Any())
+                            {
+                                <option disabled>No facilities available</option>
+                            }
+                        </select>
+                        <div id="capacityInfo" class="hidden mt-2 bg-blue-50 border border-blue-100 rounded-lg p-2 text-sm text-blue-800"></div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-500 mb-1">Date</label>
+                        <input type="date" name="date" required
+                            class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-500 mb-1">No. of Days</label>
+                            <input type="number" name="days" id="daysInput" min="1" value="1" required onchange="updatePrice()"
+                                class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-500 mb-1">Est. Price</label>
+                            <div id="estPrice" class="w-full p-3 bg-slate-100 border rounded-xl text-slate-700 font-bold">₹0</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-500 mb-1">Purpose / Event Name</label>
+                        <input type="text" name="purpose" placeholder="e.g. Jay Surani's Birthday Party" required
+                            class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
+                        Request Booking
+                    </button>
+                </form>
+            </div>
+        }
+
+        <!-- RIGHT: Bookings List -->
+        <div class="space-y-6 @(isAdmin ? "lg:col-span-3" : "lg:col-span-2")">
+
+            @if (isAdmin)
+            {
+                <!-- Admin: All Booking Requests -->
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-4">All Booking Requests</h2>
+                    @if (!allBookings.Any())
+                    {
+                        <div class="bg-slate-50 rounded-xl p-8 text-center text-slate-500">No booking requests yet.</div>
+                    }
+                    <div class="space-y-4">
+                        @foreach (var b in allBookings)
+                        {
+                            <div class="bg-white border border-slate-100 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between shadow-sm gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-slate-800">@b.Facility?.Name</h3>
+                                        <p class="text-sm text-slate-500">
+                                            @b.Date.ToString("ddd MMM dd yyyy") •
+                                            <span class="font-semibold">@b.User?.Name</span>
+                                            (@b.User?.Wing-@b.User?.FlatNumber)
+                                        </p>
+                                        @if (!string.IsNullOrEmpty(b.Purpose))
+                                        {
+                                            <p class="text-xs text-slate-400">"@b.Purpose" — @b.Days day(s) • ₹@b.TotalPrice</p>
+                                        }
+                                        @if (b.Status == "rejected" && !string.IsNullOrEmpty(b.RejectReason))
+                                        {
+                                            <p class="text-xs text-red-500 font-semibold mt-1">Reason: @b.RejectReason</p>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    @if (b.Status == "pending")
+                                    {
+                                        <form asp-controller="Events" asp-action="UpdateBookingStatus" method="post">
+                                            <input type="hidden" name="id" value="@b.Id" />
+                                            <input type="hidden" name="status" value="approved" />
+                                            <button type="submit" class="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-bold hover:bg-green-200">Approve</button>
+                                        </form>
+                                        <button type="button" onclick="openRejectModal(@b.Id)" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-bold hover:bg-red-200">Reject</button>
+                                    }
+                                    else
+                                    {
+                                        var cls = b.Status == "approved" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700";
+                                        <span class="px-4 py-2 rounded-full text-xs font-bold uppercase @cls">@b.Status</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Admin: Upcoming Events List -->
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-4">Upcoming Events</h2>
+                    @if (!events.Any())
+                    {
+                        <div class="bg-slate-50 rounded-xl p-4 text-center text-slate-500">No events posted yet.</div>
+                    }
+                    <div class="space-y-3">
+                        @foreach (var ev in events)
+                        {
+                            <div class="bg-white border border-slate-100 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center">
+                                        <i data-lucide="star" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 text-sm">@ev.Title</h3>
+                                        <p class="text-xs text-slate-400">@ev.EventDate.ToString("ddd, MMM dd") • @ev.Location</p>
+                                    </div>
+                                </div>
+                                <form asp-controller="Events" asp-action="Delete" method="post" onsubmit="return confirm('Delete event?')">
+                                    <input type="hidden" name="id" value="@ev.Id" />
+                                    <button type="submit" class="text-red-400 hover:text-red-600 p-2 rounded-lg">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Resident: My Bookings -->
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-4">My Bookings</h2>
+                    @if (!myBookings.Any())
+                    {
+                        <div class="bg-slate-50 rounded-xl p-8 text-center text-slate-500">No bookings found. Use the form on the left to request one!</div>
+                    }
+                    <div class="space-y-4">
+                        @foreach (var b in myBookings)
+                        {
+                            var badgeCls = b.Status switch { "approved" => "bg-green-100 text-green-700", "rejected" => "bg-red-100 text-red-700", _ => "bg-yellow-100 text-yellow-700" };
+                            var icon = b.Status switch { "approved" => "check-circle", "rejected" => "x-circle", _ => "clock" };
+                            <div class="bg-white border border-slate-100 p-5 rounded-2xl flex items-center justify-between shadow-sm">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
+                                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-slate-800">@(b.Facility?.Name ?? "(Deleted Facility)")</h3>
+                                        <p class="text-sm text-slate-500">@b.Date.ToString("ddd MMM dd yyyy") • @b.Purpose</p>
+                                        <p class="text-xs text-slate-400">@b.Days day(s) • ₹@b.TotalPrice total</p>
+                                        @if (b.Status == "rejected" && !string.IsNullOrEmpty(b.RejectReason))
+                                        {
+                                            <p class="text-xs text-red-500 font-semibold mt-1">Reason: @b.RejectReason</p>
+                                        }
+                                    </div>
+                                </div>
+                                <span class="px-4 py-2 rounded-full text-xs font-bold uppercase flex items-center gap-2 @badgeCls">
+                                    <i data-lucide="@icon" class="w-3.5 h-3.5"></i> @b.Status
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Resident: Upcoming Community Events -->
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-4">Upcoming Society Events</h2>
+                    @if (!events.Any())
+                    {
+                        <div class="bg-slate-50 rounded-xl p-4 text-center text-slate-500">No upcoming events.</div>
+                    }
+                    <div class="space-y-3">
+                        @foreach (var ev in events)
+                        {
+                            <div class="bg-white border border-slate-100 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
+                                <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="star" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800">@ev.Title</h3>
+                                    <p class="text-sm text-slate-500">@ev.EventDate.ToString("ddd, MMM dd yyyy") • @ev.Location</p>
+                                    <p class="text-xs text-slate-400">@ev.Description</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (isAdmin)
+{
+    <!-- Add Event Modal -->
+    <div id="addEventModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 shadow-xl w-full max-w-md relative">
+            <button onclick="document.getElementById('addEventModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-xl font-bold mb-6 text-slate-800">Add New Event</h2>
+            <form asp-controller="Events" asp-action="Create" method="post" class="space-y-4">
+                <input type="text" name="title" placeholder="Event Title (e.g. Jay Surani's Workshop)" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                <textarea name="description" rows="2" placeholder="Description" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="datetime-local" name="eventDate" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                    <input type="text" name="location" placeholder="Location" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <input type="text" name="organizer" placeholder="Jay Surani" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Create Event</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reject Booking Modal -->
+    <div id="rejectBookingModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 shadow-xl w-full max-w-md relative">
+            <button onclick="document.getElementById('rejectBookingModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-xl font-bold mb-2 text-red-600">Reject Booking</h2>
+            <p class="text-slate-500 text-sm mb-6">Please provide a reason for rejecting this booking.</p>
+            <form asp-controller="Events" asp-action="UpdateBookingStatus" method="post" class="space-y-4">
+                <input type="hidden" id="rejectBookingId" name="id" value="" />
+                <input type="hidden" name="status" value="rejected" />
+                <textarea name="rejectReason" rows="3" placeholder="e.g. Facility is under maintenance" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700 transition">Confirm Rejection</button>
+            </form>
+        </div>
+    </div>
+}
+
+<!-- JS: Live price estimation -->
+<script>
+    function updatePrice() {
+        const select = document.getElementById('facilitySelect');
+        const days = parseInt(document.getElementById('daysInput')?.value) || 1;
+        const selected = select?.options[select.selectedIndex];
+        const price = parseFloat(selected?.dataset?.price || 0);
+        const priceEl = document.getElementById('estPrice');
+        if (priceEl) priceEl.textContent = '₹' + (price * days).toLocaleString();
+    }
+
+    function openRejectModal(id) {
+        document.getElementById('rejectBookingId').value = id;
+        document.getElementById('rejectBookingModal').classList.remove('hidden');
+    }
+</script>

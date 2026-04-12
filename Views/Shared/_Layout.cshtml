@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -21,16 +21,60 @@
       }
     </style>
 </head>
-<body class="selection:bg-blue-100 selection:text-blue-900">
-    <div class="min-h-screen">
-        <main role="main">
-            @RenderBody()
-        </main>
+<body class="selection:bg-blue-100 selection:text-blue-900 bg-slate-50">
+    <div class="min-h-screen flex flex-col md:flex-row bg-slate-50">
+        
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            
+            <partial name="_Sidebar" />
+            
+            
+            <div class="flex-1 md:ml-64 flex flex-col min-h-screen overflow-x-hidden">
+                <main role="main" class="flex-1 p-6 md:p-8 bg-slate-50/50">
+                    @RenderBody()
+                </main>
+            </div>
+        }
+        else
+        {
+            
+            <main role="main" class="flex-1">
+                @RenderBody()
+            </main>
+        }
     </div>
 
     <!-- Initialize Lucide Icons -->
     <script>
       lucide.createIcons();
+    </script>
+    
+    <!-- Global Lightbox -->
+    <div id="imageLightbox" class="fixed inset-0 z-[100] hidden bg-black/90 flex items-center justify-center p-4 cursor-zoom-out transition-opacity duration-300" onclick="this.classList.add('hidden')">
+        <img id="lightboxImage" src="" class="max-w-full max-h-full rounded-lg shadow-2xl object-contain transition-transform duration-300 scale-95" alt="Full Screen Image" />
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const lightbox = document.getElementById('imageLightbox');
+            const lightboxImg = document.getElementById('lightboxImage');
+            
+            document.querySelectorAll('.lightbox-trigger').forEach(img => {
+                img.style.cursor = 'zoom-in';
+                img.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    lightboxImg.src = img.src;
+                    lightbox.classList.remove('hidden');
+                    setTimeout(() => lightboxImg.classList.replace('scale-95', 'scale-100'), 10);
+                });
+            });
+
+            lightbox.addEventListener('click', () => {
+                lightboxImg.classList.replace('scale-100', 'scale-95');
+                setTimeout(() => lightbox.classList.add('hidden'), 200);
+            });
+        });
     </script>
     
     @await RenderSectionAsync("Scripts", required: false)

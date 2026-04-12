@@ -1,8 +1,6 @@
 @{
     ViewData["Title"] = "Login";
-    // We don't want the default Layout with the Navbar for the Login page. 
-    // Wait, the React app uses the global styling but without the Navbar.
-    Layout = null;
+    Layout = null; // Don't use standard authenticated layout
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -10,27 +8,38 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SmartSocietyMVC</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="selection:bg-blue-100 selection:text-blue-900 bg-slate-900 bg-cover bg-center bg-fixed" style="background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url('/images/society-bg.png'); backdrop-filter: blur(2px);">
-    <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
+<body class="selection:bg-blue-100 selection:text-blue-900">
+    <div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+        <!-- Decorative Background Elements -->
+        <div class="absolute top-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full -translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/4 w-64 h-64 bg-blue-400 opacity-5 rounded-full blur-3xl"></div>
+
+        <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 relative z-10">
             <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-slate-800">Welcome Back</h2>
-                <p class="text-slate-500 mt-2">Society Management System</p>
+                <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">Welcome Back</h2>
+                <p class="text-slate-500 mt-2">Smart Society Management System</p>
             </div>
 
-            <form method="post" action="/Account/Login" class="space-y-6">
+            <form asp-action="Login" asp-controller="Account" method="post" class="space-y-6">
                 @if (ViewBag.Error != null)
                 {
                     <div class="bg-red-50 border-l-4 border-red-500 p-3 text-red-700 text-sm">
                         <p class="font-bold">Error</p>
                         <p>@ViewBag.Error</p>
+                    </div>
+                }
+                
+                @if (TempData["Message"] != null)
+                {
+                    <div class="bg-green-50 border-l-4 border-green-500 p-3 text-green-700 text-sm mb-4">
+                        <p class="font-bold">Success</p>
+                        <p>@TempData["Message"]</p>
                     </div>
                 }
 
@@ -46,10 +55,8 @@
                            class="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" />
                 </div>
 
-                <button type="submit"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition duration-300 transform active:scale-95">
-                    <i data-lucide="log-in" class="w-5 h-5"></i>
-                    Sign In
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition duration-300 transform active:scale-95">
+                    <i data-lucide="log-in" class="w-5 h-5"></i> Sign In
                 </button>
             </form>
         </div>

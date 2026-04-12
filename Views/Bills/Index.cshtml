@@ -1,0 +1,148 @@
+@{
+    ViewData["Title"] = "Billing System";
+    var userRole = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "resident";
+    var bills = ViewBag.Bills as List<SmartSocietyMVC.Models.Bill> ?? new List<SmartSocietyMVC.Models.Bill>();
+    var residents = ViewBag.Residents as List<SmartSocietyMVC.Models.User> ?? new List<SmartSocietyMVC.Models.User>();
+}
+
+<div class="space-y-8 animate-fade-in">
+
+    @if (TempData["BillSuccess"] != null)
+    {
+        <div class="p-3 rounded-lg text-sm font-medium bg-green-50 text-green-700">
+            @TempData["BillSuccess"]
+        </div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="p-3 rounded-lg text-sm font-medium bg-red-50 text-red-700">
+            @ViewBag.Error
+        </div>
+    }
+
+    <!-- 1. GENERATOR FORM (Admin Only) -->
+    @if (userRole == "admin")
+    {
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800">
+                <i data-lucide="users" class="text-blue-500 w-6 h-6"></i> Generate Monthly Bill
+            </h3>
+
+            <form asp-controller="Bills" asp-action="Create" method="post" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Resident</label>
+                    <select name="UserId" required class="w-full p-3 border rounded-xl">
+                        <option value="">-- Choose a Resident --</option>
+                        @foreach (var r in residents)
+                        {
+                            <option value="@r.Id">@r.Name (@r.Email)</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Amount (₹)</label>
+                        <input type="number" name="Amount" placeholder="2500" required
+                               class="w-full p-3 border rounded-xl" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Bill Description / Month</label>
+                        <input type="text" name="Month" placeholder="e.g. Maintenance - March 2026" required
+                               class="w-full p-3 border rounded-xl" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Due Date</label>
+                    <input type="date" name="DueDate" required class="w-full p-3 border rounded-xl" />
+                </div>
+
+                <button type="submit" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition">
+                    Create Bill
+                </button>
+            </form>
+        </div>
+    }
+
+    <!-- 2. MASTER BILL LIST -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h3 class="text-xl font-bold mb-6 text-slate-800">
+            @(userRole == "admin" ? "Payment Records" : "My Payment History")
+        </h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-bold">
+                    <tr>
+                        @if (userRole == "admin")
+                        {
+                            <th class="p-4">Resident</th>
+                        }
+                        <th class="p-4">Description</th>
+                        <th class="p-4">Amount</th>
+                        <th class="p-4">Status</th>
+                        @if (userRole == "admin")
+                        {
+                            <th class="p-4">Action</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @if (bills.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center p-6 text-slate-400">No bills found.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var bill in bills)
+                        {
+                            <tr class="hover:bg-slate-50">
+                                @if (userRole == "admin")
+                                {
+                                    <td class="p-4 font-medium text-slate-700">
+                                        @(bill.User?.Name ?? "Unknown")
+                                        <div class="text-xs text-slate-400">@(bill.User?.Email ?? "")</div>
+                                    </td>
+                                }
+                                <td class="p-4 text-sm">
+                                    <span class="block font-bold text-slate-700">@(bill.Description ?? bill.Month ?? "Maintenance Bill")</span>
+                                    <span class="text-xs text-slate-500">@bill.Month</span>
+                                </td>
+                                <td class="p-4 font-bold">₹@bill.Amount</td>
+                                <td class="p-4">
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold flex w-fit items-center gap-1 @(bill.Status == "paid" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")">
+                                        @if (bill.Status == "paid")
+                                        {
+                                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                                        }
+                                        else
+                                        {
+                                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                        }
+                                        @bill.Status.ToUpper()
+                                    </span>
+                                </td>
+                                @if (userRole == "admin")
+                                {
+                                    <td class="p-4">
+                                        @if (bill.Status == "pending")
+                                        {
+                                            <form asp-controller="Bills" asp-action="MarkPaid" asp-route-id="@bill.Id" method="post" onsubmit="return confirm('Confirm cash/bank payment received?');">
+                                                <button type="submit" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-green-700 transition shadow-sm">
+                                                    Mark Paid
+                                                </button>
+                                            </form>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

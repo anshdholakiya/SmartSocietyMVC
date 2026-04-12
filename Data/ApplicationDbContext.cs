@@ -17,6 +17,7 @@ namespace SmartSocietyMVC.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Complaint> Complaints { get; set; }
         public DbSet<Bill> Bills { get; set; }
+        public DbSet<Event> Events { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +42,13 @@ namespace SmartSocietyMVC.Data
                 .HasOne(n => n.Society)
                 .WithMany(s => s.Notices)
                 .HasForeignKey(n => n.SocietyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Event to Society
+            modelBuilder.Entity<Event>()
+                .HasOne(e => e.Society)
+                .WithMany()
+                .HasForeignKey(e => e.SocietyId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // User to Bookings

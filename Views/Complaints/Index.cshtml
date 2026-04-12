@@ -1,0 +1,174 @@
+@{
+    ViewData["Title"] = "Complaints";
+    var userRole = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "resident";
+    var complaints = ViewBag.Complaints as List<SmartSocietyMVC.Models.Complaint> ?? new List<SmartSocietyMVC.Models.Complaint>();
+}
+
+<div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <header class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-slate-800">Complaints & Issues</h2>
+    </header>
+
+    @if (userRole == "resident")
+    {
+        <!-- File Complaint Form -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-slate-800">
+                <i data-lucide="alert-circle" class="text-rose-500 w-6 h-6"></i> Report an Issue
+            </h3>
+            
+            @if (TempData["ComplaintSuccess"] != null)
+            {
+                <div class="bg-green-50 text-green-700 p-3 rounded-xl mb-4 text-sm font-bold border border-green-200">
+                    @TempData["ComplaintSuccess"]
+                </div>
+            }
+
+            <form asp-controller="Complaints" asp-action="Create" method="post" enctype="multipart/form-data" class="space-y-4">
+                <input type="text" name="Title" placeholder="e.g. Water Leakage in Bathroom" required
+                       class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                
+                <textarea name="Description" placeholder="Describe the issue in detail..." required
+                          class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none h-24"></textarea>
+
+                <label class="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition">
+                    <i data-lucide="camera" class="text-slate-400 w-5 h-5"></i>
+                    <span class="text-sm text-slate-500" id="fileNameDisplay">Upload Photo (Optional)</span>
+                    <input type="file" name="ImageFile" class="hidden" accept="image/*" onchange="updateFileName(this)" />
+                </label>
+
+                <button type="submit" class="w-full bg-rose-600 text-white py-3 rounded-xl font-bold hover:bg-rose-700 transition flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-5 h-5"></i> Submit Complaint
+                </button>
+            </form>
+        </div>
+    }
+
+    <!-- Complaint List -->
+    <div class="bg-gradient-to-br from-slate-50 to-blue-50 p-8 rounded-3xl shadow-lg border border-slate-200 mt-8">
+        <h3 class="text-2xl font-bold mb-2 flex items-center gap-3 text-slate-800">
+            <div class="p-2 bg-blue-500 rounded-xl text-white">
+                <i data-lucide="message-square" class="w-6 h-6"></i>
+            </div>
+            Recent Complaints
+        </h3>
+        <p class="text-slate-600 text-sm mb-8">Track and manage community issues</p>
+
+        <div class="space-y-4">
+            @if (complaints.Count == 0)
+            {
+                <div class="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-slate-300">
+                    <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-slate-300 mb-2"></i>
+                    <p class="text-slate-400 font-semibold">No complaints filed yet</p>
+                </div>
+            }
+            else
+            {
+                foreach (var c in complaints)
+                {
+                    string badgeBg = "", badgeText = "", iconName = "";
+
+                    switch (c.Status)
+                    {
+                        case "resolved":
+                            badgeBg = "bg-gradient-to-r from-green-500 to-emerald-500 shadow-green-200";
+                            badgeText = "Resolved";
+                            iconName = "check-circle";
+                            break;
+                        case "in-progress":
+                            badgeBg = "bg-gradient-to-r from-amber-500 to-orange-500 shadow-amber-200 animate-pulse";
+                            badgeText = "In Progress";
+                            iconName = "zap";
+                            break;
+                        default:
+                            badgeBg = "bg-gradient-to-r from-slate-400 to-slate-600 shadow-slate-200";
+                            badgeText = "Pending";
+                            iconName = "clock";
+                            break;
+                    }
+
+                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] hover:-translate-y-1 duration-300 group">
+                        
+                        <!-- Card Header -->
+                        <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-transparent">
+                            <div class="flex justify-between items-start gap-4">
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-lg text-slate-900 group-hover:text-blue-600 transition">@c.Title</h4>
+                                    <div class="flex items-center gap-3 text-xs text-slate-500 mt-2 flex-wrap">
+                                        <div class="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-lg">
+                                            <i data-lucide="clock" class="w-3.5 h-3.5"></i> @c.CreatedAt.ToShortDateString()
+                                        </div>
+                                        @if (userRole == "admin" && c.User != null)
+                                        {
+                                            <div class="flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-lg font-semibold">
+                                                <i data-lucide="user" class="w-3.5 h-3.5"></i> @c.User.Name
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Status Badge -->
+                                <div class="px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 whitespace-nowrap text-white shadow-lg @badgeBg">
+                                    <i data-lucide="@iconName" class="w-4 h-4"></i> @badgeText
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-6 space-y-4">
+                            <div class="flex flex-col md:flex-row gap-4">
+                                <!-- Image -->
+                                @if (!string.IsNullOrEmpty(c.ImageUrl))
+                                {
+                                    <div class="relative">
+                                        <img src="@c.ImageUrl" alt="Complaint evidence" class="lightbox-trigger cursor-pointer w-32 h-32 object-cover rounded-xl border-2 border-slate-200 shadow-md transition-transform" />
+                                    </div>
+                                }
+
+                                <!-- Description -->
+                                <div class="flex-1">
+                                    <p class="text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200 italic">
+                                        "@c.Description"
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Admin Controls -->
+                            @if (userRole == "admin")
+                            {
+                                <div class="pt-4 border-t border-slate-100 flex justify-between items-center gap-3">
+                                    <form asp-controller="Complaints" asp-action="UpdateStatus" asp-route-id="@c.Id" method="post" class="flex gap-2 items-center">
+                                        <select name="status" onchange="this.form.submit()" class="text-sm font-bold text-slate-700 bg-white border-2 border-slate-300 rounded-lg px-4 py-2 outline-none focus:border-blue-500 cursor-pointer hover:border-blue-300 transition">
+                                            <option value="pending" selected="@(c.Status == "pending" ? "selected" : null)">📋 Pending</option>
+                                            <option value="in-progress" selected="@(c.Status == "in-progress" ? "selected" : null)">⚡ In Progress</option>
+                                            <option value="resolved" selected="@(c.Status == "resolved" ? "selected" : null)">✓ Resolved</option>
+                                        </select>
+                                    </form>
+
+                                    <form asp-controller="Complaints" asp-action="Delete" asp-route-id="@c.Id" method="post" onsubmit="return confirm('Delete this complaint?');">
+                                        <button type="submit" class="p-2 text-slate-400 hover:text-white hover:bg-red-600 rounded-lg transition-all transform hover:scale-110 duration-200 shadow-sm hover:shadow-md" title="Delete Complaint">
+                                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateFileName(input) {
+            const display = document.getElementById('fileNameDisplay');
+            if (input.files && input.files[0]) {
+                display.innerText = input.files[0].name;
+            } else {
+                display.innerText = 'Upload Photo (Optional)';
+            }
+        }
+    </script>
+}

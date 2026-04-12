@@ -1,90 +1,112 @@
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Smart Society";
+    Layout = null; // Independent layout
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="selection:bg-blue-100 selection:text-blue-900">
+    <div class="min-h-screen bg-white font-sans text-slate-900">
+        <!-- NAVBAR -->
+        <nav class="max-w-6xl mx-auto px-6 h-24 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer font-bold tracking-tight text-xl">
+                <i data-lucide="shield" class="text-blue-600 w-7 h-7"></i>
+                <span>SmartSociety</span>
+            </div>
+            <div class="flex gap-4 items-center">
+                <a href="@Url.Action("Login", "Account")" class="px-5 py-2.5 bg-slate-900 text-white font-bold text-sm rounded-full hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
+                    Access Portal
+                </a>
+            </div>
+        </nav>
 
-<div class="bg-white">
-    <!-- --- NAVBAR --- -->
-    <nav class="max-w-6xl mx-auto px-6 h-24 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-2 cursor-pointer font-bold tracking-tight text-xl">
-            <i data-lucide="shield" class="text-blue-600 w-[26px] h-[26px]" style="fill:currentColor; stroke-width:0;"></i>
-            <span>SmartSociety</span>
-        </a>
-        <div class="flex gap-4 items-center">
-            <a href="/Home/Gallery" class="hidden sm:inline-block px-5 py-2.5 font-semibold text-slate-600 hover:text-blue-600 transition-colors">
-                Gallery
-            </a>
-            <a href="/Account/Login"
-               class="px-5 py-2.5 bg-slate-900 text-white font-bold text-sm rounded-full hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
-                Access Portal
-            </a>
-        </div>
-    </nav>
+        <!-- HERO SECTION -->
+        <header class="px-6 py-8 md:py-12 text-center max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1]">
+                Community Living, <br />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Simplified.</span>
+            </h1>
 
-    <!-- --- HERO SECTION --- -->
-    <header class="px-6 py-8 md:py-12 text-center max-w-4xl mx-auto">
-        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1]">
-            Community Living, <br />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Simplified.</span>
-        </h1>
+            <p class="text-xl text-slate-500 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
+                The all-in-one platform for bills, bookings, and complaints. <br class="hidden md:block" />
+                Everything you need to run your society smoothly.
+            </p>
 
-        <p class="text-xl text-slate-500 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
-            The all-in-one platform for bills, bookings, and complaints. <br class="hidden md:block" />
-            Everything you need to run your society smoothly.
-        </p>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="/Account/Login"
-               class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all flex items-center gap-2 shadow-xl shadow-blue-200 hover:translate-y-[-2px]">
-                Get Started <i data-lucide="arrow-right" class="w-5 h-5"></i>
-            </a>
-        </div>
-
-        <div class="mt-8 pt-6 border-t border-slate-100 flex justify-center gap-8 text-sm font-semibold text-slate-400">
-            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Instant Payments</div>
-            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Secure Data</div>
-            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> 24/7 Access</div>
-        </div>
-    </header>
-
-    <!-- --- FEATURES GRID --- -->
-    <section class="bg-slate-50 py-12 border-y border-slate-100">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-slate-900 mb-3">Core Features</h2>
-                <p class="text-slate-500 max-w-2xl mx-auto block">Essential tools designed for modern residents. Manage your entire community life from a single dashboard with our state-of-the-art platform.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="@Url.Action("Login", "Account")" class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all flex items-center gap-2 shadow-xl shadow-blue-200 hover:translate-y-[-2px]">
+                    Get Started <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </a>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8 text-left">
-                @await Html.PartialAsync("_FeatureCard", new { Icon = "calendar", IconClass = "text-indigo-600", Title = "Facility Booking", Desc = "Reserve common areas like the Club House or Tennis Court with real-time conflict checking." })
-                @await Html.PartialAsync("_FeatureCard", new { Icon = "message-square", IconClass = "text-rose-600", Title = "Digital Helpdesk", Desc = "Raise complaints with photo attachments. track resolution status directly from the dashboard." })
+            <div class="mt-8 pt-6 border-t border-slate-100 flex justify-center gap-8 text-sm font-semibold text-slate-400">
+                <div class="flex items-center gap-2"><i data-lucide="check" class="text-green-500 w-4 h-4"></i> Instant Payments</div>
+                <div class="flex items-center gap-2"><i data-lucide="check" class="text-green-500 w-4 h-4"></i> Secure Data</div>
+                <div class="flex items-center gap-2"><i data-lucide="check" class="text-green-500 w-4 h-4"></i> 24/7 Access</div>
             </div>
-        </div>
-    </section>
+        </header>
 
-    <!-- --- CTA BOTTOM --- -->
-    <section class="py-16 px-6 text-center">
-        <div class="max-w-3xl mx-auto space-y-8">
-            <h2 class="text-4xl font-bold text-slate-900 tracking-tight">Ready to upgrade your experience?</h2>
-            <p class="text-slate-500 text-lg">Join the hundreds of communities that have switched to SmartSociety for a hassle-free living experience.</p>
-            <a href="/Account/Login"
-               class="px-10 py-5 bg-slate-900 text-white font-bold rounded-full hover:bg-slate-800 transition-all shadow-xl hover:shadow-2xl inline-flex items-center gap-2 mx-auto w-fit">
-                Login to Dashboard <i data-lucide="arrow-right" class="w-5 h-5"></i>
-            </a>
-        </div>
-    </section>
+        <!-- FEATURES GRID -->
+        <section class="bg-slate-50 py-12 border-y border-slate-100">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-3">Core Features</h2>
+                    <p class="text-slate-500">Essential tools designed for modern residents.</p>
+                </div>
 
-    <!-- --- FOOTER --- -->
-    <footer class="bg-white py-12 border-t border-slate-100">
-        <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500 font-medium">
-            <div class="flex items-center gap-2">
-                <i data-lucide="shield" class="w-[18px] h-[18px] text-slate-900"></i>
-                <span class="text-slate-900 font-bold">SmartSociety © 2026</span>
+                <div class="grid md:grid-cols-2 gap-8 text-left">
+                    <div class="p-8 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="mb-5 p-3 bg-slate-50 rounded-xl w-fit group-hover:bg-blue-50 transition-colors">
+                            <i data-lucide="calendar" class="text-indigo-600 w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">Facility Booking</h3>
+                        <p class="text-slate-500 leading-relaxed font-medium text-sm">Reserve common areas like the Club House or Tennis Court with real-time conflict checking.</p>
+                    </div>
+                    
+                    <div class="p-8 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="mb-5 p-3 bg-slate-50 rounded-xl w-fit group-hover:bg-blue-50 transition-colors">
+                            <i data-lucide="message-square" class="text-rose-600 w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">Digital Helpdesk</h3>
+                        <p class="text-slate-500 leading-relaxed font-medium text-sm">Raise complaints with photo attachments. track resolution status directly from the dashboard.</p>
+                    </div>
+                </div>
             </div>
-            <div class="flex gap-6">
-                <a href="/Home/Privacy" class="hover:text-blue-600 transition-colors">Privacy</a>
-                <a href="#" class="hover:text-blue-600 transition-colors">Terms</a>
-                <a href="#" class="hover:text-blue-600 transition-colors">Contact</a>
+        </section>
+
+        <!-- CTA BOTTOM -->
+        <section class="py-16 px-6 text-center">
+            <div class="max-w-3xl mx-auto space-y-8">
+                <h2 class="text-4xl font-bold text-slate-900 tracking-tight">Ready to upgrade your experience?</h2>
+                <p class="text-slate-500 text-lg">Join the hundreds of communities that have switched to SmartSociety for a hassle-free living experience.</p>
+                <a href="@Url.Action("Login", "Account")" class="px-10 py-5 bg-slate-900 text-white font-bold rounded-full hover:bg-slate-800 transition-all shadow-xl hover:shadow-2xl inline-flex items-center gap-2">
+                    Login to Dashboard <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </a>
             </div>
-        </div>
-    </footer>
-</div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="bg-white py-12 border-t border-slate-100">
+            <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500 font-medium">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="shield" class="text-slate-900 w-4 h-4"></i>
+                    <span class="text-slate-900 font-bold">SmartSociety © 2026</span>
+                </div>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-blue-600 transition-colors">Privacy</a>
+                    <a href="#" class="hover:text-blue-600 transition-colors">Terms</a>
+                    <a href="#" class="hover:text-blue-600 transition-colors">Contact</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

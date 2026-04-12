@@ -1,0 +1,146 @@
+@model SmartSocietyMVC.Models.Society
+@{
+    ViewData["Title"] = "Society Information";
+    ViewData["ActiveTab"] = "society";
+    var isAdmin = User.IsInRole("admin");
+    var galleryImages = ViewBag.GalleryImages as List<string> ?? new List<string>();
+}
+
+<div class="p-6 md:p-10 space-y-8 animate-fade-in pb-24">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">Society Showcase</h1>
+            <p class="text-slate-500">Overview of our community and facilities.</p>
+        </div>
+        @if (isAdmin)
+        {
+            <button onclick="document.getElementById('editSocietyModal').classList.remove('hidden')" class="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+                <i data-lucide="edit-3" class="w-[18px] h-[18px]"></i> Edit Details
+            </button>
+        }
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Info Card -->
+        <div class="lg:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl"></div>
+
+            <h2 class="text-4xl font-extrabold mb-4">@Model?.Name</h2>
+            <div class="space-y-4 text-blue-100">
+                <div class="flex items-start gap-3">
+                    <i data-lucide="map-pin" class="mt-1 flex-shrink-0 w-5 h-5"></i>
+                    <p class="text-lg leading-relaxed">@Model?.Address</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <i data-lucide="phone" class="w-5 h-5"></i>
+                    <p class="text-lg font-medium">@Model?.ContactNumber</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Amenities Card -->
+        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+            <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <i data-lucide="building" class="text-rose-500 w-6 h-6"></i> Amenities
+            </h3>
+
+            @{
+                var facilityNames = ViewBag.FacilityNames as List<string> ?? new List<string> { "Swimming Pool", "Gymnasium", "Club House", "24/7 Security" };
+            }
+            <div class="flex flex-wrap gap-3">
+                @foreach (var amenity in facilityNames)
+                {
+                    <span class="px-4 py-2 bg-rose-50 text-rose-600 rounded-full text-sm font-semibold flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> @amenity
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <div class="mt-12">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold text-slate-800">Society Gallery</h3>
+            @if (isAdmin)
+            {
+                <form asp-controller="Society" asp-action="AddGalleryImage" method="post" enctype="multipart/form-data" class="flex gap-2">
+                    <label class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 transition cursor-pointer text-sm font-bold flex items-center gap-2">
+                        <i data-lucide="upload" class="w-4 h-4"></i> Upload Image
+                        <input type="file" name="ImageFile" class="hidden" accept="image/*" onchange="this.form.submit()" />
+                    </label>
+                </form>
+            }
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            @if (galleryImages.Any())
+            {
+                foreach (var img in galleryImages)
+                {
+                    <div class="relative rounded-xl overflow-hidden shadow-md aspect-video bg-slate-200 group">
+                        <img src="@img" alt="Gallery image" class="lightbox-trigger cursor-pointer w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        @if (isAdmin)
+                        {
+                            <form asp-controller="Society" asp-action="DeleteGalleryImage" method="post"
+                                  class="absolute top-2 right-2"
+                                  onsubmit="return confirm('Delete this image from gallery and Cloudinary?')">
+                                <input type="hidden" name="imageUrl" value="@img" />
+                                <button type="submit"
+                                        class="bg-red-600/90 backdrop-blur text-white px-2 py-1 rounded-lg shadow flex items-center gap-1 text-xs font-bold hover:bg-red-700 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6L18.1 20a2 2 0 0 1-2 1.9H7.9a2 2 0 0 1-2-1.9L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                    Delete
+                                </button>
+                            </form>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-span-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center py-14 text-slate-400 gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p class="text-sm font-medium">No gallery images yet</p>
+                    @if (isAdmin)
+                    {
+                        <p class="text-xs">Click <strong>"Upload Image"</strong> above to add photos.</p>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (isAdmin)
+{
+    <div id="editSocietyModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 shadow-xl w-full max-w-md relative">
+            <button onclick="document.getElementById('editSocietyModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-xl font-bold mb-6 text-slate-800">Edit Society Details</h2>
+            <form asp-controller="Society" asp-action="Update" method="post" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Society Name</label>
+                    <input type="text" name="name" value="@Model?.Name" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Address</label>
+                    <textarea name="address" rows="2" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">@Model?.Address</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Contact Number</label>
+                    <input type="text" name="contactNumber" value="@Model?.ContactNumber" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Amenities (comma separated)</label>
+                    @{
+                        var amText = string.Join(", ", ViewBag.FacilityNames as List<string> ?? new List<string>());
+                    }
+                    <textarea name="amenities" rows="2" placeholder="Gym, Pool, Security" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">@amText</textarea>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Save Changes</button>
+            </form>
+        </div>
+    </div>
+}

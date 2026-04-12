@@ -1,13 +1,11 @@
 @{
     ViewData["Title"] = "Dashboard";
-    Layout = "_DashboardLayout";
-    
+    var userRole = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "resident";
     var stats = ViewBag.Stats;
-    var userRole = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "admin";
 }
 
 <div class="space-y-8 animate-fade-in">
-    <!-- 1. WELCOME BANNER -->
+    
     <div class="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl border border-slate-800">
         <div class="relative z-10">
             <h3 class="text-3xl font-bold mb-2">Society Overview</h3>
@@ -23,48 +21,173 @@
             </p>
         </div>
         <div class="absolute right-[-20px] bottom-[-20px] opacity-10">
-            <i data-lucide="shield" class="w-[200px] h-[200px]"></i>
+            <i data-lucide="shield" class="w-48 h-48"></i>
         </div>
     </div>
 
-    <!-- 2. KEY METRICS GRID -->
+    
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         @if (userRole == "admin")
         {
-            @await Html.PartialAsync("_StatCard", new { Title = "Total Collection", Value = $"₹{stats.TotalCollected:N0}", Icon = "wallet", IconColor = "text-green-500", Trend = "Lifetime", Color = "text-slate-800" })
-            @await Html.PartialAsync("_StatCard", new { Title = "Pending Dues", Value = $"₹{stats.TotalPending:N0}", Icon = "alert-triangle", IconColor = "text-amber-500", Trend = "Urgent", Color = "text-amber-600" })
-            @await Html.PartialAsync("_StatCard", new { Title = "Total Residents", Value = stats.TotalResidents.ToString(), Icon = "users", IconColor = "text-blue-500", Trend = "Occupancy", Color = "text-slate-800" })
-            @await Html.PartialAsync("_StatCard", new { Title = "Active Issues", Value = stats.ActiveIssues.ToString(), Icon = "message-square", IconColor = "text-rose-500", Trend = "Open Tickets", Color = "text-rose-600" })
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-default">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform">
+                        <i data-lucide="wallet" class="text-green-500 w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter bg-slate-50 px-2 py-1 rounded">Lifetime</span>
+                </div>
+                <h4 class="text-slate-500 text-sm font-semibold">Total Collection</h4>
+                <p class="text-2xl font-bold mt-1 text-slate-800">₹@stats.TotalCollected.ToString("N0")</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-default">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform">
+                        <i data-lucide="alert-triangle" class="text-amber-500 w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter bg-slate-50 px-2 py-1 rounded">Urgent</span>
+                </div>
+                <h4 class="text-slate-500 text-sm font-semibold">Pending Dues</h4>
+                <p class="text-2xl font-bold mt-1 text-amber-600">₹@stats.TotalPending.ToString("N0")</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-default">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform">
+                        <i data-lucide="users" class="text-blue-500 w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter bg-slate-50 px-2 py-1 rounded">Occupancy</span>
+                </div>
+                <h4 class="text-slate-500 text-sm font-semibold">Total Residents</h4>
+                <p class="text-2xl font-bold mt-1 text-slate-800">@stats.TotalResidents</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-default">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform">
+                        <i data-lucide="message-square" class="text-rose-500 w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter bg-slate-50 px-2 py-1 rounded">Open Tickets</span>
+                </div>
+                <h4 class="text-slate-500 text-sm font-semibold">Active Issues</h4>
+                <p class="text-2xl font-bold mt-1 text-rose-600">@stats.ActiveIssues</p>
+            </div>
         }
         else
         {
-            @* Resident Stats placeholder *@
-            @await Html.PartialAsync("_StatCard", new { Title = "Pending Dues", Value = "₹0", Icon = "wallet", IconColor = "text-blue-500", Trend = "Outstanding", Color = "text-slate-800" })
-            @await Html.PartialAsync("_StatCard", new { Title = "Last Payment", Value = "₹0", Icon = "trending-up", IconColor = "text-green-500", Trend = "None", Color = "text-slate-800" })
-            @await Html.PartialAsync("_StatCard", new { Title = "My Complaints", Value = "0", Icon = "message-square", IconColor = "text-amber-500", Trend = "Pending", Color = "text-slate-800" })
-            @await Html.PartialAsync("_StatCard", new { Title = "Total Paid", Value = "₹0", Icon = "shield", IconColor = "text-green-500", Trend = "Lifetime", Color = "text-slate-800" })
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-default">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform">
+                        <i data-lucide="wallet" class="text-blue-500 w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter bg-slate-50 px-2 py-1 rounded">Outstanding</span>
+                </div>
+                <h4 class="text-slate-500 text-sm font-semibold">Pending Dues</h4>
+                <p class="text-2xl font-bold mt-1 text-slate-800">₹@stats.MyBalance.ToString("N0")</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-default">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform">
+                        <i data-lucide="trending-up" class="text-green-500 w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter bg-slate-50 px-2 py-1 rounded">None</span>
+                </div>
+                <h4 class="text-slate-500 text-sm font-semibold">Last Payment</h4>
+                <p class="text-2xl font-bold mt-1 text-slate-800">₹0</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-default">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform">
+                        <i data-lucide="message-square" class="text-amber-500 w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter bg-slate-50 px-2 py-1 rounded">Pending</span>
+                </div>
+                <h4 class="text-slate-500 text-sm font-semibold">My Complaints</h4>
+                <p class="text-2xl font-bold mt-1 text-slate-800">@stats.ActiveIssues</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-default">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform">
+                        <i data-lucide="shield" class="text-green-500 w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter bg-slate-50 px-2 py-1 rounded">Lifetime</span>
+                </div>
+                <h4 class="text-slate-500 text-sm font-semibold">Total Paid</h4>
+                <p class="text-2xl font-bold mt-1 text-slate-800">₹@stats.TotalSpent.ToString("N0")</p>
+            </div>
         }
     </div>
 
-    <!-- 3. ACTIONS LAYOUT -->
-    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-        <h4 class="font-bold text-slate-800 mb-6 text-lg">Urgent Action Items</h4>
+    <div class="grid grid-cols-1 gap-8">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm h-full max-h-[350px] overflow-y-auto">
+            <h4 class="font-bold text-slate-800 mb-6 text-lg">Urgent Action Items</h4>
             <div class="space-y-4">
-                @if (stats.TotalPending > 0)
+                @if (userRole == "admin")
                 {
-                    @await Html.PartialAsync("_ActionItem", new { Title = $"Collect Pending Dues (₹{stats.TotalPending:N0})", Status = "High Priority", Priority = "High", Link = "/Dashboard/Bills" })
+                    @if (stats.TotalPending > 0)
+                    {
+                        <a asp-controller="Bills" asp-action="Index" class="block flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:bg-white hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 rounded-full ring-2 ring-white shadow-sm bg-red-500"></div>
+                                <span class="font-semibold text-slate-700">Collect Pending Dues (₹@stats.TotalPending.ToString("N0"))</span>
+                            </div>
+                            <span class="text-xs font-bold px-2 py-1 rounded border bg-red-50 text-red-600 border-red-100">High Priority</span>
+                        </a>
+                    }
+                    @if (stats.ActiveIssues > 0)
+                    {
+                        <a asp-controller="Complaints" asp-action="Index" class="block flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:bg-white hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 rounded-full ring-2 ring-white shadow-sm bg-amber-500"></div>
+                                <span class="font-semibold text-slate-700">Resolve @stats.ActiveIssues Open Complaints</span>
+                            </div>
+                            <span class="text-xs font-bold px-2 py-1 rounded border bg-slate-100 text-slate-500 border-slate-200">Medium</span>
+                        </a>
+                    }
+                    @if (DateTime.Now.Day <= 5)
+                    {
+                        <a asp-controller="Bills" asp-action="Index" class="block flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:bg-white hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 rounded-full ring-2 ring-white shadow-sm bg-red-500"></div>
+                                <span class="font-semibold text-slate-700">Generate Monthly Bills</span>
+                            </div>
+                            <span class="text-xs font-bold px-2 py-1 rounded border bg-slate-100 text-slate-500 border-slate-200">Scheduled</span>
+                        </a>
+                    }
+                    @if (stats.TotalPending == 0 && stats.ActiveIssues == 0)
+                    {
+                        <div class="text-slate-400 italic p-4 text-center bg-slate-50 rounded-xl">All caught up! No urgent actions.</div>
+                    }
                 }
-                @if (stats.ActiveIssues > 0)
+                else
                 {
-                    @await Html.PartialAsync("_ActionItem", new { Title = $"Resolve {stats.ActiveIssues} Open Complaints", Status = "Pending", Priority = "Medium", Link = "/Dashboard/Complaints" })
-                }
-                @if (userRole == "admin" && DateTime.Now.Day <= 5)
-                {
-                    @await Html.PartialAsync("_ActionItem", new { Title = "Generate Monthly Bills", Status = "Scheduled", Priority = "High", Link = "/Dashboard/Bills" })
-                }
-                @if (stats.TotalPending == 0 && stats.ActiveIssues == 0)
-                {
-                    <div class="text-slate-400 italic p-4 text-center bg-slate-50 rounded-xl">All caught up! No urgent actions.</div>
+                    @if (stats.MyBalance > 0)
+                    {
+                        <a asp-controller="Bills" asp-action="Index" class="block flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:bg-white hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 rounded-full ring-2 ring-white shadow-sm bg-red-500"></div>
+                                <span class="font-semibold text-slate-700">Pay Pending Dues (₹@stats.MyBalance.ToString("N0"))</span>
+                            </div>
+                            <span class="text-xs font-bold px-2 py-1 rounded border bg-red-50 text-red-600 border-red-100">High Priority</span>
+                        </a>
+                    }
+                    @if (stats.ActiveIssues > 0)
+                    {
+                        <a asp-controller="Complaints" asp-action="Index" class="block flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:bg-white hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 rounded-full ring-2 ring-white shadow-sm bg-amber-500"></div>
+                                <span class="font-semibold text-slate-700">You have @stats.ActiveIssues Open Complaints</span>
+                            </div>
+                            <span class="text-xs font-bold px-2 py-1 rounded border bg-slate-100 text-slate-500 border-slate-200">Medium</span>
+                        </a>
+                    }
+                    @if (stats.MyBalance == 0 && stats.ActiveIssues == 0)
+                    {
+                        <div class="text-slate-400 italic p-4 text-center bg-slate-50 rounded-xl">All caught up! No urgent actions.</div>
+                    }
                 }
             </div>
         </div>

@@ -1,0 +1,158 @@
+@using SmartSocietyMVC.Models
+@{
+    ViewData["Title"] = "Facilities Management";
+    var facilities = ViewBag.Facilities as List<Facility> ?? new List<Facility>();
+    var isAdmin = User.IsInRole("admin");
+}
+
+<div class="p-6 md:p-10 space-y-8 animate-fade-in pb-24">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">Manage Facilities</h1>
+            <p class="text-slate-500">Add, update, or remove community facilities.</p>
+        </div>
+        @if (isAdmin)
+        {
+            <button onclick="document.getElementById('addFacilityModal').classList.remove('hidden')" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                <i data-lucide="plus" class="w-[18px] h-[18px]"></i> Add Facility
+            </button>
+        }
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @if (!facilities.Any())
+        {
+            <p class="col-span-3 text-center text-slate-400 py-10">No facilities added yet.</p>
+        }
+        @foreach (var f in facilities)
+        {
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800">@f.Name</h3>
+                    @if (isAdmin)
+                    {
+                        <div class="flex items-center gap-1">
+                            <button onclick="openEditFacilityModal(@f.Id, '@Html.Raw(f.Name?.Replace("'", "\\'"))', '@Html.Raw(f.Description?.Replace("'", "\\'"))', @f.Capacity, @f.PricePerDay, '@Html.Raw(f.OperatingHours?.Replace("'", "\\'"))', '@f.Status')" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg">
+                                <i data-lucide="edit" class="w-[18px] h-[18px]"></i>
+                            </button>
+                            <form asp-controller="Facilities" asp-action="Delete" method="post" onsubmit="return confirm('Remove this facility?')">
+                                <input type="hidden" name="id" value="@f.Id" />
+                                <button type="submit" class="text-red-500 hover:bg-red-50 p-2 rounded-lg">
+                                    <i data-lucide="trash-2" class="w-[18px] h-[18px]"></i>
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+                <p class="text-sm text-slate-500 mb-4 line-clamp-2">@f.Description</p>
+                <p class="text-xs text-slate-400 mb-2"><i data-lucide="clock" class="w-3 h-3 inline mr-1"></i>@f.OperatingHours</p>
+                <div class="flex justify-between items-center text-sm font-medium text-slate-700">
+                    <span>Capacity: @f.Capacity</span>
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">₹@f.PricePerDay/day</span>
+                </div>
+                <div class="mt-3">
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full @(f.Status == "Available" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")">@f.Status</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (isAdmin)
+{
+    <!-- Add Facility Modal -->
+    <div id="addFacilityModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 shadow-xl w-full max-w-md relative">
+            <button onclick="document.getElementById('addFacilityModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-xl font-bold mb-6 text-slate-800">Add New Facility</h2>
+            <form asp-controller="Facilities" asp-action="Create" method="post" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Facility Name</label>
+                    <input type="text" name="name" placeholder="e.g. Swimming Pool" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Description</label>
+                    <textarea name="description" rows="2" placeholder="e.g. Fully air conditioned..." class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-500 mb-1">Capacity</label>
+                        <input type="number" name="capacity" min="1" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-500 mb-1">Price/Day (₹)</label>
+                        <input type="number" name="pricePerDay" min="0" step="0.01" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Operating Hours</label>
+                    <input type="text" name="operatingHours" placeholder="e.g. 6 AM - 10 PM" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Add Facility</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Facility Modal -->
+    <div id="editFacilityModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 shadow-xl w-full max-w-md relative">
+            <button onclick="document.getElementById('editFacilityModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-xl font-bold mb-6 text-slate-800">Edit Facility</h2>
+            <form asp-controller="Facilities" asp-action="Update" method="post" class="space-y-4">
+                <input type="hidden" name="id" id="editFacilityId" />
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Facility Name</label>
+                    <input type="text" name="name" id="editFacilityName" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Description</label>
+                    <textarea name="description" id="editFacilityDesc" rows="2" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-500 mb-1">Capacity</label>
+                        <input type="number" name="capacity" id="editFacilityCap" min="1" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-500 mb-1">Price/Day (₹)</label>
+                        <input type="number" name="pricePerDay" id="editFacilityPrice" min="0" step="0.01" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Operating Hours</label>
+                    <input type="text" name="operatingHours" id="editFacilityHours" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-500 mb-1">Status</label>
+                    <select name="status" id="editFacilityStatus" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="Available">Available</option>
+                        <option value="Maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Save Changes</button>
+            </form>
+        </div>
+    </div>
+}
+
+<script>
+    function openEditFacilityModal(id, name, desc, cap, price, hours, status) {
+        document.getElementById('editFacilityId').value = id;
+        document.getElementById('editFacilityName').value = name;
+        document.getElementById('editFacilityDesc').value = desc;
+        document.getElementById('editFacilityCap').value = cap;
+        document.getElementById('editFacilityPrice').value = price;
+        document.getElementById('editFacilityHours').value = hours;
+        document.getElementById('editFacilityStatus').value = status;
+        document.getElementById('editFacilityModal').classList.remove('hidden');
+    }
+</script>
