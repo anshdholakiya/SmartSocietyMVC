@@ -47,29 +47,20 @@
     </div>
 
     <!-- 3. ACTIONS LAYOUT -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Left: Financial Chart Placeholder-->
-        <div class="lg:col-span-2">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm h-full min-h-[350px] flex items-center justify-center">
-                 <p class="text-slate-400 italic">Financial Chart Component (To be implemented)</p>
-            </div>
-        </div>
-
-        <!-- Right: Urgent Actions -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm h-full max-h-[350px] overflow-y-auto">
-            <h4 class="font-bold text-slate-800 mb-6 text-lg">Urgent Action Items</h4>
+    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <h4 class="font-bold text-slate-800 mb-6 text-lg">Urgent Action Items</h4>
             <div class="space-y-4">
                 @if (stats.TotalPending > 0)
                 {
-                    @await Html.PartialAsync("_ActionItem", new { Title = $"Collect Pending Dues (₹{stats.TotalPending:N0})", Status = "High Priority", Priority = "High" })
+                    @await Html.PartialAsync("_ActionItem", new { Title = $"Collect Pending Dues (₹{stats.TotalPending:N0})", Status = "High Priority", Priority = "High", Link = "/Dashboard/Bills" })
                 }
                 @if (stats.ActiveIssues > 0)
                 {
-                    @await Html.PartialAsync("_ActionItem", new { Title = $"Resolve {stats.ActiveIssues} Open Complaints", Status = "Pending", Priority = "Medium" })
+                    @await Html.PartialAsync("_ActionItem", new { Title = $"Resolve {stats.ActiveIssues} Open Complaints", Status = "Pending", Priority = "Medium", Link = "/Dashboard/Complaints" })
                 }
                 @if (userRole == "admin" && DateTime.Now.Day <= 5)
                 {
-                    @await Html.PartialAsync("_ActionItem", new { Title = "Generate Monthly Bills", Status = "Scheduled", Priority = "High" })
+                    @await Html.PartialAsync("_ActionItem", new { Title = "Generate Monthly Bills", Status = "Scheduled", Priority = "High", Link = "/Dashboard/Bills" })
                 }
                 @if (stats.TotalPending == 0 && stats.ActiveIssues == 0)
                 {

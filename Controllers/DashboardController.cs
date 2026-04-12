@@ -169,7 +169,7 @@ namespace SmartSocietyMVC.Controllers
         {
             ViewData["ActiveTab"] = "society";
             ViewBag.Society = new {
-                name = "AutoCraft Heights",
+                name = "Smart Society Heights",
                 address = "123 Smart Drive, Tech Park",
                 contactNumber = "+1 (555) 123-4567",
                 amenities = new[] { "Swimming Pool", "Gymnasium", "Club House", "24/7 Security" },
@@ -253,8 +253,8 @@ namespace SmartSocietyMVC.Controllers
             ViewData["ActiveTab"] = "bookings";
             ViewBag.Bookings = new List<dynamic>
             {
-                new { id = 1, Facility = new { name = "Community Hall" }, date = DateTime.Now.AddDays(5), User = new { name = "John Doe", wing = "A", flatNumber = "101" }, days = 1, totalPrice = 5000, purpose = "Birthday Party", status = "pending" },
-                new { id = 2, Facility = new { name = "Swimming Pool Area" }, date = DateTime.Now.AddDays(10), User = new { name = "Alice Smith", wing = "B", flatNumber = "205" }, days = 2, totalPrice = 4000, purpose = "Weekend Gathering", status = "approved" }
+                new { id = 1, Facility = new { name = "Community Hall" }, date = DateTime.Now.AddDays(5), User = new { name = "Rahul Sharma", wing = "A", flatNumber = "101" }, days = 1, totalPrice = 5000, purpose = "Birthday Party", status = "pending" },
+                new { id = 2, Facility = new { name = "Swimming Pool Area" }, date = DateTime.Now.AddDays(10), User = new { name = "Priya Patel", wing = "B", flatNumber = "205" }, days = 2, totalPrice = 4000, purpose = "Weekend Gathering", status = "approved" }
             };
             return View();
         }
@@ -319,8 +319,8 @@ namespace SmartSocietyMVC.Controllers
             // Mock bills for the UI
             ViewBag.AllBills = new List<dynamic>
             {
-                new { id = 1, amount = 2500, month = "March 2026 Maintenance", description = "Monthly dues", status = "paid", User = new { name = "John Doe", email = "john@example.com" } },
-                new { id = 2, amount = 1500, month = "Event Fund", description = "Holi Contribution", status = "pending", User = new { name = "Alice Smith", email = "alice@example.com" } }
+                new { id = 1, amount = 2500, month = "March 2026 Maintenance", description = "Monthly dues", status = "paid", User = new { name = "Rahul Sharma", email = "john@example.com" } },
+                new { id = 2, amount = 1500, month = "Event Fund", description = "Holi Contribution", status = "pending", User = new { name = "Priya Patel", email = "alice@example.com" } }
             };
             
             ViewBag.MyBills = new List<dynamic>
@@ -337,7 +337,7 @@ namespace SmartSocietyMVC.Controllers
             ViewBag.Users = new List<dynamic>
             {
                 new { id = 1, name = "Admin User", email = "admin@society.com", role = "admin", wing = "A", flatNumber = "Penthouse", isSetup = true, createdAt = DateTime.Now.AddYears(-1) },
-                new { id = 2, name = "John Doe", email = "john@example.com", role = "resident", wing = "A", flatNumber = "101", isSetup = true, createdAt = DateTime.Now.AddMonths(-5) },
+                new { id = 2, name = "Rahul Sharma", email = "john@example.com", role = "resident", wing = "A", flatNumber = "101", isSetup = true, createdAt = DateTime.Now.AddMonths(-5) },
                 new { id = 3, name = "Pending Resident", email = "pending@example.com", role = "resident", wing = "B", flatNumber = "202", isSetup = false, createdAt = DateTime.Now.AddDays(-2) }
             };
             return View();
@@ -393,3 +393,4 @@ namespace SmartSocietyMVC.Controllers
         }
     }
 }
+
