@@ -32,8 +32,32 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
     
-    // Ensure database is created/migrated
-    context.Database.Migrate();
+    // Ensure database is created
+    context.Database.EnsureCreated();
+
+    // Ensure Society exists
+    var defaultSociety = context.Societies.FirstOrDefault();
+    if (defaultSociety == null)
+    {
+        defaultSociety = new Society { Name = "Smart Society", Address = "123 Main St" };
+        context.Societies.Add(defaultSociety);
+        context.SaveChanges();
+    }
+
+    // Ensure Admin exists
+    if (!context.Users.Any(u => u.Email == "masteradmin@society.com"))
+    {
+        context.Users.Add(new User
+        {
+            Name = "Master Admin",
+            Email = "masteradmin@society.com",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("master123"),
+            Role = "admin",
+            IsSetup = true,
+            SocietyId = defaultSociety.Id
+        });
+        context.SaveChanges();
+    }
 }
 
 // Configure the HTTP request pipeline.
