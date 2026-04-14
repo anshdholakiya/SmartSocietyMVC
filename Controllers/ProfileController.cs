@@ -72,7 +72,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Profile updated successfully!";
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
     }
 }

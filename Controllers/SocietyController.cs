@@ -70,7 +70,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Societies.Update(society);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Society details updated!";
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -105,7 +105,7 @@ namespace SmartSocietyMVC.Controllers
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Gallery image added successfully!";
             
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -154,7 +154,7 @@ namespace SmartSocietyMVC.Controllers
             catch { /* If Cloudinary deletion fails, we still removed from DB */ }
 
             TempData["SuccessMessage"] = "Gallery image deleted.";
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
     }
 }

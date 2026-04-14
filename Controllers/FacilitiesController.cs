@@ -55,7 +55,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Facilities.Add(facility);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Facility added successfully!";
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -76,7 +76,7 @@ namespace SmartSocietyMVC.Controllers
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Facility updated successfully!";
             }
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost, ActionName("Delete")]
@@ -90,7 +90,7 @@ namespace SmartSocietyMVC.Controllers
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Facility removed.";
             }
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
     }
 }

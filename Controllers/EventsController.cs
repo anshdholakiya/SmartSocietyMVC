@@ -97,7 +97,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Events.Add(ev);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Event created successfully!";
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Admin deletes an event
@@ -111,7 +111,7 @@ namespace SmartSocietyMVC.Controllers
                 _context.Events.Remove(ev);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Resident requests a booking
@@ -138,7 +138,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Booking request submitted! Awaiting admin approval.";
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Admin approves or rejects a booking
@@ -159,7 +159,7 @@ namespace SmartSocietyMVC.Controllers
                 }
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
     }
 }

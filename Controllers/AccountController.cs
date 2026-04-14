@@ -55,7 +55,7 @@ namespace SmartSocietyMVC.Controllers
 
             await HttpContext.SignInAsync("Cookies", principal);
 
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
         
         [HttpPost]

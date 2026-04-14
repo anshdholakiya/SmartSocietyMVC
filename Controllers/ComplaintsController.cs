@@ -108,7 +108,7 @@ namespace SmartSocietyMVC.Controllers
             await _context.SaveChangesAsync();
             
             TempData["ComplaintSuccess"] = "Complaint filed successfully!";
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -121,7 +121,7 @@ namespace SmartSocietyMVC.Controllers
                 complaint.Status = status;
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost, ActionName("Delete")]
@@ -134,7 +134,7 @@ namespace SmartSocietyMVC.Controllers
                 _context.Complaints.Remove(complaint);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
         }
     }
 }

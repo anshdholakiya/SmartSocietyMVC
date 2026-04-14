@@ -10,7 +10,7 @@ namespace SmartSocietyMVC.Controllers
             // redirect them straight to their dashboard.
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction(nameof(Index));
             }
             
             // Otherwise, show the landing page
