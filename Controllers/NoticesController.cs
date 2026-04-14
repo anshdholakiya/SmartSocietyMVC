@@ -47,9 +47,9 @@ namespace SmartSocietyMVC.Controllers
                 notice.CreatedAt = DateTime.UtcNow;
                 _context.Add(notice);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Dashboard");
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost, ActionName("Delete")]
@@ -62,7 +62,7 @@ namespace SmartSocietyMVC.Controllers
                 _context.Notices.Remove(notice);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

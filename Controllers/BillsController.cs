@@ -85,7 +85,7 @@ namespace SmartSocietyMVC.Controllers
             {
                 ViewBag.Error = "Invalid bill data.";
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost]
@@ -99,7 +99,7 @@ namespace SmartSocietyMVC.Controllers
                 await _context.SaveChangesAsync();
                 TempData["BillSuccess"] = "Payment recorded successfully.";
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

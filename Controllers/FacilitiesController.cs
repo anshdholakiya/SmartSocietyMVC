@@ -40,7 +40,7 @@ namespace SmartSocietyMVC.Controllers
         public async Task<IActionResult> Create(string name, string description, int capacity, decimal pricePerDay, string operatingHours, string status)
         {
             var societyId = GetSocietyId();
-            if (societyId == 0) return RedirectToAction(nameof(Index));
+            if (societyId == 0) return RedirectToAction("Index", "Dashboard");
 
             var facility = new Facility
             {
@@ -55,7 +55,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Facilities.Add(facility);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Facility added successfully!";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost]
@@ -76,7 +76,7 @@ namespace SmartSocietyMVC.Controllers
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Facility updated successfully!";
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost, ActionName("Delete")]
@@ -90,7 +90,7 @@ namespace SmartSocietyMVC.Controllers
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Facility removed.";
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

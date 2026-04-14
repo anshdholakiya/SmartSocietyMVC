@@ -50,7 +50,7 @@ namespace SmartSocietyMVC.Controllers
                 await _context.SaveChangesAsync();
                 TempData["UserSuccess"] = "User role updated.";
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost, ActionName("Delete")]
@@ -66,7 +66,7 @@ namespace SmartSocietyMVC.Controllers
                 await _context.SaveChangesAsync();
                 TempData["UserSuccess"] = "User removed from society.";
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

@@ -42,7 +42,7 @@ namespace SmartSocietyMVC.Controllers
         {
             var userId = GetUserId();
             var user = await _context.Users.FindAsync(userId);
-            if (user == null) return RedirectToAction(nameof(Index));
+            if (user == null) return RedirectToAction("Index", "Dashboard");
 
             user.Name = name ?? user.Name;
             user.Profession = profession;
@@ -72,7 +72,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Profile updated successfully!";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

@@ -72,7 +72,7 @@ namespace SmartSocietyMVC.Controllers
             var userId = GetUserId();
             var societyId = GetSocietyId();
 
-            if (userId == 0 || societyId == 0) return RedirectToAction(nameof(Index));
+            if (userId == 0 || societyId == 0) return RedirectToAction("Index", "Dashboard");
 
             var complaint = new Complaint
             {
@@ -108,7 +108,7 @@ namespace SmartSocietyMVC.Controllers
             await _context.SaveChangesAsync();
             
             TempData["ComplaintSuccess"] = "Complaint filed successfully!";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost]
@@ -121,7 +121,7 @@ namespace SmartSocietyMVC.Controllers
                 complaint.Status = status;
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost, ActionName("Delete")]
@@ -134,7 +134,7 @@ namespace SmartSocietyMVC.Controllers
                 _context.Complaints.Remove(complaint);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

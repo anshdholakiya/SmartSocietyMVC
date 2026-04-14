@@ -34,7 +34,7 @@ namespace SmartSocietyMVC.Controllers
             var societyId = GetSocietyId();
             var society = await _context.Societies.FindAsync(societyId);
 
-            if (society == null) return RedirectToAction(nameof(Index));
+            if (society == null) return RedirectToAction("Index", "Dashboard");
 
             var amenitiesList = System.Text.Json.JsonSerializer.Deserialize<List<string>>(society.Amenities ?? "[]");
             if (amenitiesList == null || !amenitiesList.Any())
@@ -55,7 +55,7 @@ namespace SmartSocietyMVC.Controllers
         {
             var societyId = GetSocietyId();
             var society = await _context.Societies.FindAsync(societyId);
-            if (society == null) return RedirectToAction(nameof(Index));
+            if (society == null) return RedirectToAction("Index", "Dashboard");
 
             society.Name = name ?? society.Name;
             society.Address = address;
@@ -70,7 +70,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Societies.Update(society);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Society details updated!";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost]
@@ -79,7 +79,7 @@ namespace SmartSocietyMVC.Controllers
         {
             var societyId = GetSocietyId();
             var society = await _context.Societies.FindAsync(societyId);
-            if (society == null || ImageFile == null || ImageFile.Length == 0) return RedirectToAction(nameof(Index));
+            if (society == null || ImageFile == null || ImageFile.Length == 0) return RedirectToAction("Index", "Dashboard");
 
             var account = new Account(
                 _config["Cloudinary:CloudName"],
@@ -105,7 +105,7 @@ namespace SmartSocietyMVC.Controllers
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Gallery image added successfully!";
             
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost]
@@ -114,7 +114,7 @@ namespace SmartSocietyMVC.Controllers
         {
             var societyId = GetSocietyId();
             var society = await _context.Societies.FindAsync(societyId);
-            if (society == null || string.IsNullOrEmpty(imageUrl)) return RedirectToAction(nameof(Index));
+            if (society == null || string.IsNullOrEmpty(imageUrl)) return RedirectToAction("Index", "Dashboard");
 
             // Remove from gallery list
             var galleryImages = System.Text.Json.JsonSerializer.Deserialize<List<string>>(society.Gallery ?? "[]") ?? new List<string>();
@@ -154,7 +154,7 @@ namespace SmartSocietyMVC.Controllers
             catch { /* If Cloudinary deletion fails, we still removed from DB */ }
 
             TempData["SuccessMessage"] = "Gallery image deleted.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

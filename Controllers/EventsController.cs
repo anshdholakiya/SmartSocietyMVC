@@ -83,7 +83,7 @@ namespace SmartSocietyMVC.Controllers
         public async Task<IActionResult> Create(string title, string description, DateTime eventDate, string location, string organizer)
         {
             var societyId = GetSocietyId();
-            if (societyId == 0) return RedirectToAction(nameof(Index));
+            if (societyId == 0) return RedirectToAction("Index", "Dashboard");
 
             var ev = new Event
             {
@@ -97,7 +97,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Events.Add(ev);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Event created successfully!";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         // POST: Admin deletes an event
@@ -111,7 +111,7 @@ namespace SmartSocietyMVC.Controllers
                 _context.Events.Remove(ev);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         // POST: Resident requests a booking
@@ -120,10 +120,10 @@ namespace SmartSocietyMVC.Controllers
         public async Task<IActionResult> RequestBooking(int facilityId, DateTime date, string purpose, int days)
         {
             var userId = GetUserId();
-            if (userId == 0) return RedirectToAction(nameof(Index));
+            if (userId == 0) return RedirectToAction("Index", "Dashboard");
 
             var facility = await _context.Facilities.FindAsync(facilityId);
-            if (facility == null) return RedirectToAction(nameof(Index));
+            if (facility == null) return RedirectToAction("Index", "Dashboard");
 
             var booking = new Booking
             {
@@ -138,7 +138,7 @@ namespace SmartSocietyMVC.Controllers
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Booking request submitted! Awaiting admin approval.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
 
         // POST: Admin approves or rejects a booking
@@ -159,7 +159,7 @@ namespace SmartSocietyMVC.Controllers
                 }
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }
